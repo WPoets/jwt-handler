@@ -23,7 +23,7 @@ function encode($atts,$content=null,$shortcode=null){
 	
 		// create token
 		try{
-			$jwt = JWT::encode($payload, $api_key);
+			$jwt = JWT::encode($payload, $api_key,'HS256');
 		}catch(\Exception $e){
 			return json_encode(array("status"=>"error","message"=>"Invalid input"));
 		}
@@ -42,7 +42,7 @@ function decode($atts,$content=null,$shortcode=null){
 
 	$api_key=$data['api_key'];
 	try{
-		$decoded = JWT::decode($jwt_token, $api_key, array('HS256'));
+		$decoded = JWT::decode($jwt_token, new Key($api_key,'HS256'));
 	}catch(\Exception $e){
 		return json_encode(array("status"=>"error","message"=>"Invalid API Key "));
 	}
