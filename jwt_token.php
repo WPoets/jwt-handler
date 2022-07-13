@@ -1,7 +1,8 @@
 <?php
 
 namespace aw2\jwt;
-use \Firebase\JWT\JWT;
+use Firebase\JWT\JWT;
+use Firebase\JWT\Key;
 
 \aw2_library::add_service('jwt_token.encode','Encodes the string. Use jwt_token.encode',['namespace'=>__NAMESPACE__]);
 function encode($atts,$content=null,$shortcode=null){
