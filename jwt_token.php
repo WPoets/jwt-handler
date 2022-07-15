@@ -1,6 +1,7 @@
 <?php
 
 namespace aw2\jwt;
+#require_once AWESOME_PATH.'/vendor/autoload.php';
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
 
@@ -24,7 +25,7 @@ function encode($atts,$content=null,$shortcode=null){
 	
 		// create token
 		try{
-			$jwt = JWT::encode($payload, $api_key,'HS256');
+			$jwt = JWT::encode($payload,$api_key,'HS256');
 		}catch(\Exception $e){
 			return json_encode(array("status"=>"error","message"=>"Invalid input"));
 		}
@@ -42,22 +43,29 @@ function decode($atts,$content=null,$shortcode=null){
 		), $atts) );	
 
 	$api_key=$data['api_key'];
+
 	try{
-	        $decoded = JWT::decode($jwt_token, $api_key, array('HS256'));
-	}catch(\Exception $e){
-		return json_encode(array("status"=>"error","message"=>"Invalid API Key "));
+		#$decoded = JWT::decode($jwt_token,new Key($api_key, 'HS256'));
+		$decoded = JWT::decode($jwt_token, $api_key, array('HS256'));
+		if($_COOKIE['nishant']){
+			print_r($data);
+		print_r($decoded);
 	}
-		
+	}catch(\Exception $e){
+		return json_encode(array("status"=>"error","status_code"=>304,"message"=>"Invalid API Key."));
+	}
+	
 	if($decoded->aud!=$data['partner_id']){
-		return json_encode(array("status"=>"error","message"=>"Invalid partner Id."));
+		return json_encode(array("status"=>"error","status_code"=>302,"message"=>"Invalid partner Id."));
 	}
 	$mins = (time() - $decoded->iat) / 60;
 	
 	$time_out = $time_out ?: 2;
 	if($mins > $time_out){		
-		return json_encode(array("status"=>"error","message"=>"Token has been expired."));
+		return json_encode(array("status"=>"error","status_code"=>316,"message"=>"Token has been expired."));
 	}
 		
-	return json_encode(array("status"=>"success","message"=>"authentication successful."));
+	return json_encode(array("status"=>"success","status_code"=>200,"message"=>"Authentication successful."));
 
 }
+
